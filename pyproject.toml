@@ -1,0 +1,28 @@
+[project]
+name = "hackathon-forecasting-deliverable"
+version = "1.0.0"
+description = "13-week unit-sales forecast deliverable (chronos-2 + timesfm-2.5 + LightGBM ensemble)"
+readme = "README.md"
+requires-python = "==3.12.*"
+dependencies = [
+    "accelerate>=1.13.0",
+    "chronos-forecasting>=2.2.2",
+    "lightgbm>=4.6.0",
+    "outerbounds==0.12.33",
+    "pandas==3.0.3",
+    "peft>=0.19.1",
+    "pyarrow==24.0.0",
+    "requests==2.34.2",
+    "snowflake==1.12.1",
+    "tenacity==9.1.4",
+    "timesfm",
+    "torch>=2.12.0",
+    "transformers>=5,<6",
+]
+
+[tool.uv.sources]
+timesfm = { git = "https://github.com/google-research/timesfm" }
+
+# timesfm-2.5 fine-tuning needs transformers>=5, so override Chronos' older cap.
+[tool.uv]
+override-dependencies = ["transformers>=5,<6"]
