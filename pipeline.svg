@@ -1,0 +1,492 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" viewBox="0 0 1360 3265" font-family="&#39;Wix Madefor Display&#39;,&#39;Segoe UI&#39;,system-ui,-apple-system,sans-serif">
+  <title>Forecasting pipeline — architecture, ensemble weighting, and results</title>
+  <g transform="translate(0, 0.0) scale(1.545455)">
+
+  <title>13-week unit-sales forecasting pipeline</title>
+  <defs>
+    <linearGradient id="f1-brandGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#770BFF"></stop>
+      <stop offset="100%" stop-color="#3A55FF"></stop>
+    </linearGradient>
+    <radialGradient id="f1-topGlow" cx="0.32" cy="0" r="1.1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.16"></stop>
+      <stop offset="60%" stop-color="#FFFFFF" stop-opacity="0"></stop>
+    </radialGradient>
+    <linearGradient id="f1-fanGrad" gradientUnits="userSpaceOnUse" x1="0" y1="274" x2="0" y2="332">
+      <stop offset="0%" stop-color="#C4D3E3"></stop>
+      <stop offset="100%" stop-color="#6B81FF"></stop>
+    </linearGradient>
+    <filter id="f1-cardShadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0C1133" flood-opacity="0.07"></feDropShadow>
+    </filter>
+    <filter id="f1-glow" x="-30%" y="-40%" width="160%" height="200%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#3A55FF" flood-opacity="0.32"></feDropShadow>
+    </filter>
+    <marker id="f1-ah" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0.5 1.5 L8.5 5 L0.5 8.5 Z" fill="#3A55FF"></path>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="880" height="985" rx="24" fill="#EBF0F5"></rect>
+
+  
+  <text x="40" y="54" font-size="11" font-weight="600" letter-spacing="2.2" fill="#7289A5">ARCHITECTURE</text>
+  <text x="40" y="91" font-size="28" font-weight="700" letter-spacing="-0.6" fill="#070708">13-week unit-sales forecasting pipeline</text>
+
+  
+  <g data-screen-label="Model sources">
+    <text x="40" y="130" font-size="10.5" font-weight="600" letter-spacing="1.8" fill="#9BADC4">MODEL SOURCES</text>
+
+    
+    <g filter="url(#f1-cardShadow)">
+      <rect x="40" y="142" width="188" height="132" rx="16" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+    <rect x="58" y="160" width="40" height="40" rx="11" fill="#EBF0F5"></rect>
+    <g transform="translate(67, 169) scale(1.375)">
+      <path d="M10.813 11.968c.157.083.36.074.5-.05l.005.005a90 90 0 0 1 1.623-1.405c.173-.143.143-.372.006-.563l-.125-.17c-.345-.465-.673-.906-.673-1.791v-3.3l.001-.335c.008-1.265.014-2.421-.933-3.305C10.404.274 9.06 0 8.03 0 6.017 0 3.77.75 3.296 3.24c-.047.264.143.404.316.443l2.054.22c.19-.009.33-.196.366-.387.176-.857.896-1.271 1.703-1.271.435 0 .929.16 1.188.55.264.39.26.91.257 1.376v.432q-.3.033-.621.065c-1.113.114-2.397.246-3.36.67C3.873 5.91 2.94 7.08 2.94 8.798c0 2.2 1.387 3.298 3.168 3.298 1.506 0 2.328-.354 3.489-1.54l.167.246c.274.405.456.675 1.047 1.166ZM6.03 8.431C6.03 6.627 7.647 6.3 9.177 6.3v.57c.001.776.002 1.434-.396 2.133-.336.595-.87.961-1.465.961-.812 0-1.286-.619-1.286-1.533" fill="#070708"></path>
+      <path d="M.435 12.174c2.629 1.603 6.698 4.084 13.183.997.28-.116.475.078.199.431C13.538 13.96 11.312 16 7.57 16 3.832 16 .968 13.446.094 12.386c-.24-.275.036-.4.199-.299z" fill="#FF9900"></path>
+      <path d="M13.828 11.943c.567-.07 1.468-.027 1.645.204.135.176-.004.966-.233 1.533-.23.563-.572.961-.762 1.115s-.333.094-.23-.137c.105-.23.684-1.663.455-1.963-.213-.278-1.177-.177-1.625-.13l-.09.009q-.142.013-.233.024c-.193.021-.245.027-.274-.032-.074-.209.779-.556 1.347-.623" fill="#FF9900"></path>
+    </g>
+    <text x="58" y="238" font-size="16" font-weight="600" fill="#070708">Chronos-2</text>
+    <text x="58" y="258" font-size="11.5" fill="#7289A5">zero-shot + fine-tuned</text>
+
+    
+    <g filter="url(#f1-cardShadow)">
+      <rect x="244" y="142" width="188" height="132" rx="16" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+    <rect x="262" y="160" width="40" height="40" rx="11" fill="#EBF0F5"></rect>
+    <g transform="translate(271, 169) scale(1.2222)">
+      <path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1636-1.8409H9v3.4814h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.2581h2.9087c1.7018-1.5668 2.6836-3.874 2.6836-6.615z" fill="#4285F4"></path>
+      <path d="M9 18c2.43 0 4.4673-.8059 5.9564-2.1805l-2.9087-2.2581c-.8059.54-1.8368.859-3.0477.859-2.344 0-4.3282-1.5831-5.036-3.7104H.9574v2.3318C2.4382 15.9832 5.4818 18 9 18z" fill="#34A853"></path>
+      <path d="M3.964 10.71c-.18-.54-.2822-1.1168-.2822-1.71s.1023-1.17.2823-1.71V4.9582H.9573A8.9965 8.9965 0 000 9c0 1.4523.3477 2.8268.9573 4.0418L3.964 10.71z" fill="#FBBC05"></path>
+      <path d="M9 3.5795c1.3214 0 2.5077.4541 3.4405 1.346l2.5813-2.5814C13.4632.8918 11.4259 0 9 0 5.4818 0 2.4382 2.0168.9573 4.9582L3.964 7.29C4.6718 5.1627 6.6559 3.5795 9 3.5795z" fill="#EA4335"></path>
+    </g>
+    <text x="262" y="238" font-size="16" font-weight="600" fill="#070708">TimesFM-2.5</text>
+    <text x="262" y="258" font-size="11.5" fill="#7289A5">zero-shot + fine-tuned</text>
+
+    
+    <g filter="url(#f1-cardShadow)">
+      <rect x="448" y="142" width="188" height="132" rx="16" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+    <rect x="466" y="160" width="40" height="40" rx="11" fill="#EBF0F5"></rect>
+    <g transform="translate(475.5, 169.5) scale(0.913)">
+      <rect x="0" y="0" width="10" height="10" fill="#F25022"></rect>
+      <rect x="11" y="0" width="10" height="10" fill="#7FBA00"></rect>
+      <rect x="0" y="11" width="10" height="10" fill="#00A4EF"></rect>
+      <rect x="11" y="11" width="10" height="10" fill="#FFB900"></rect>
+    </g>
+    <text x="466" y="238" font-size="16" font-weight="600" fill="#070708">LightGBM</text>
+    <text x="466" y="258" font-size="11.5" fill="#7289A5">categorical + log target</text>
+
+    
+    <g filter="url(#f1-cardShadow)">
+      <rect x="652" y="142" width="188" height="132" rx="16" fill="#FFFFFF" stroke="#B8C5FF"></rect>
+    </g>
+    <rect x="670" y="160" width="40" height="40" rx="11" fill="#EBF0F5"></rect>
+    <g transform="translate(679, 169) scale(1.375)">
+      <path d="m3.127 10.604 3.135-1.76.053-.153-.053-.085H6.11l-.525-.032-1.791-.048-1.554-.065-1.505-.08-.38-.081L0 7.832l.036-.234.32-.214.455.04 1.009.069 1.513.105 1.097.064 1.626.17h.259l.036-.105-.089-.065-.068-.064-1.566-1.062-1.695-1.121-.887-.646-.48-.327-.243-.306-.104-.67.435-.48.585.04.15.04.593.456 1.267.981 1.654 1.218.242.202.097-.068.012-.049-.109-.181-.9-1.626-.96-1.655-.428-.686-.113-.411a2 2 0 0 1-.068-.484l.496-.674L4.446 0l.662.089.279.242.411.94.666 1.48 1.033 2.014.302.597.162.553.06.17h.105v-.097l.085-1.134.157-1.392.154-1.792.052-.504.25-.605.497-.327.387.186.319.456-.045.294-.19 1.23-.37 1.93-.243 1.29h.142l.161-.16.654-.868 1.097-1.372.484-.545.565-.601.363-.287h.686l.505.751-.226.775-.707.895-.585.759-.839 1.13-.524.904.048.072.125-.012 1.897-.403 1.024-.186 1.223-.21.553.258.06.263-.218.536-1.307.323-1.533.307-2.284.54-.028.02.032.04 1.029.098.44.024h1.077l2.005.15.525.346.315.424-.053.323-.807.411-3.631-.863-.872-.218h-.12v.073l.726.71 1.331 1.202 1.667 1.55.084.383-.214.302-.226-.032-1.464-1.101-.565-.497-1.28-1.077h-.084v.113l.295.432 1.557 2.34.08.718-.112.234-.404.141-.444-.08-.911-1.28-.94-1.44-.759-1.291-.093.053-.448 4.821-.21.246-.484.186-.403-.307-.214-.496.214-.98.258-1.28.21-1.016.19-1.263.112-.42-.008-.028-.092.012-.953 1.307-1.448 1.957-1.146 1.227-.274.109-.477-.247.045-.44.266-.39 1.586-2.018.956-1.25.617-.723-.004-.105h-.036l-4.212 2.736-.75.096-.324-.302.04-.496.154-.162 1.267-.871z" fill="#D97757"></path>
+    </g>
+    <rect x="760" y="160" width="62" height="20" rx="10" fill="#EEF1FF"></rect>
+    <text x="791" y="173.5" font-size="9" font-weight="700" letter-spacing="1" fill="#3A55FF" text-anchor="middle">IN-HOUSE</text>
+    <text x="670" y="238" font-size="16" font-weight="600" fill="#070708">SeqGRU</text>
+    <text x="670" y="258" font-size="11.5" fill="#7289A5">recurrent net, trained here</text>
+  </g>
+
+  
+  <g fill="none" stroke="url(#f1-fanGrad)" stroke-width="1.5">
+    <path d="M134 275 C 134 314, 440 296, 440 330"></path>
+    <path d="M338 275 C 338 306, 440 300, 440 330"></path>
+    <path d="M542 275 C 542 306, 440 300, 440 330"></path>
+    <path d="M746 275 C 746 314, 440 296, 440 330"></path>
+  </g>
+  <circle cx="440" cy="336" r="5" fill="#FFFFFF" stroke="#3A55FF" stroke-width="2"></circle>
+  <path d="M440 346 L440 355" fill="none" stroke="#3A55FF" stroke-width="1.75" marker-end="url(#f1-ah)"></path>
+
+  
+  <g data-screen-label="Pipeline spine">
+    
+    <g filter="url(#f1-cardShadow)">
+      <rect x="210" y="362" width="460" height="84" rx="14" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+    <circle cx="244" cy="404" r="14" fill="#EEF1FF"></circle>
+    <text x="244" y="408.5" font-size="13" font-weight="700" fill="#3A55FF" text-anchor="middle">1</text>
+    <text x="274" y="398" font-size="16" font-weight="600" fill="#070708">Many quantile candidates</text>
+    <text x="274" y="420" font-size="12" fill="#7289A5">per-quantile forecasts (q0.5–q0.7)</text>
+    <g transform="translate(578, 382)">
+      <path d="M0 22 C 20 22, 40 14, 62 5 L62 39 C 40 30, 20 22, 0 22 Z" fill="#3A55FF" opacity="0.1"></path>
+      <path d="M0 22 C 20 22, 40 17, 62 12 L62 32 C 40 27, 20 22, 0 22 Z" fill="#3A55FF" opacity="0.16"></path>
+      <path d="M0 22 C 20 22, 40 22, 62 21" fill="none" stroke="#3A55FF" stroke-width="1.9" stroke-linecap="round"></path>
+    </g>
+
+    <path d="M440 452 L440 478" fill="none" stroke="#3A55FF" stroke-width="1.75" marker-end="url(#f1-ah)"></path>
+
+    
+    <g filter="url(#f1-cardShadow)">
+      <rect x="210" y="484" width="460" height="84" rx="14" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+    <circle cx="244" cy="526" r="14" fill="#EEF1FF"></circle>
+    <text x="244" y="530.5" font-size="13" font-weight="700" fill="#3A55FF" text-anchor="middle">2</text>
+    <text x="274" y="520" font-size="16" font-weight="600" fill="#070708">Weighted ensemble <tspan fill="#7289A5" font-weight="500">· 9 members</tspan></text>
+    <text x="274" y="542" font-size="12" fill="#7289A5">fixed-weight blend, tuned to minimize backtest WAPE</text>
+    <g transform="translate(596, 508)" fill="#3A55FF">
+      <circle cx="0" cy="0" r="3.2" opacity="0.9"></circle><circle cx="16" cy="0" r="3.2" opacity="0.5"></circle><circle cx="32" cy="0" r="3.2" opacity="0.3"></circle>
+      <circle cx="0" cy="16" r="3.2" opacity="0.45"></circle><circle cx="16" cy="16" r="3.2" opacity="0.85"></circle><circle cx="32" cy="16" r="3.2" opacity="0.55"></circle>
+      <circle cx="0" cy="32" r="3.2" opacity="0.3"></circle><circle cx="16" cy="32" r="3.2" opacity="0.6"></circle><circle cx="32" cy="32" r="3.2" opacity="0.95"></circle>
+    </g>
+
+    <path d="M440 574 L440 600" fill="none" stroke="#3A55FF" stroke-width="1.75" marker-end="url(#f1-ah)"></path>
+
+    
+    <g filter="url(#f1-cardShadow)">
+      <rect x="210" y="606" width="460" height="84" rx="14" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+    <circle cx="244" cy="648" r="14" fill="#EEF1FF"></circle>
+    <text x="244" y="652.5" font-size="13" font-weight="700" fill="#3A55FF" text-anchor="middle">3</text>
+    <text x="274" y="642" font-size="16" font-weight="600" fill="#070708">Post-processing</text>
+    <rect x="274" y="652" width="60" height="21" rx="10.5" fill="#EBF0F5"></rect>
+    <text x="304" y="666" font-size="10" font-weight="500" fill="#3D3F47" text-anchor="middle">seasonal</text>
+    <rect x="341" y="652" width="46" height="21" rx="10.5" fill="#EBF0F5"></rect>
+    <text x="364" y="666" font-size="10" font-weight="500" fill="#3D3F47" text-anchor="middle">promo</text>
+    <rect x="394" y="652" width="162" height="21" rx="10.5" fill="#EBF0F5"></rect>
+    <text x="475" y="666" font-size="10" font-weight="500" fill="#3D3F47" text-anchor="middle">reconcile to partner totals</text>
+    <rect x="563" y="652" width="80" height="21" rx="10.5" fill="#EBF0F5"></rect>
+    <text x="603" y="666" font-size="10" font-weight="500" fill="#3D3F47" text-anchor="middle">event uplift</text>
+
+    <path d="M440 696 L440 722" fill="none" stroke="#3A55FF" stroke-width="1.75" marker-end="url(#f1-ah)"></path>
+
+    
+    <g filter="url(#f1-cardShadow)">
+      <rect x="210" y="728" width="460" height="84" rx="14" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+    <circle cx="244" cy="770" r="14" fill="#EEF1FF"></circle>
+    <text x="244" y="774.5" font-size="13" font-weight="700" fill="#3A55FF" text-anchor="middle">4</text>
+    <text x="274" y="764" font-size="16" font-weight="600" fill="#070708">Residual stack <tspan fill="#7289A5" font-weight="500">· LightGBM</tspan></text>
+    <text x="274" y="786" font-size="12" fill="#7289A5">learns the blend’s residual on backtest folds</text>
+    <g transform="translate(578, 756)">
+      <path d="M0 14 L64 14" stroke="#C4D3E3" stroke-width="1.4" stroke-dasharray="3 3"></path>
+      <circle cx="6" cy="6" r="2.6" fill="#3A55FF" opacity="0.8"></circle>
+      <circle cx="18" cy="21" r="2.6" fill="#3A55FF" opacity="0.55"></circle>
+      <circle cx="30" cy="9" r="2.6" fill="#3A55FF" opacity="0.8"></circle>
+      <circle cx="42" cy="19" r="2.6" fill="#3A55FF" opacity="0.55"></circle>
+      <circle cx="55" cy="12.5" r="2.6" fill="#3A55FF" opacity="0.9"></circle>
+    </g>
+
+    <path d="M440 818 L440 844" fill="none" stroke="#3A55FF" stroke-width="1.75" marker-end="url(#f1-ah)"></path>
+
+    
+    <g filter="url(#f1-glow)">
+      <rect x="210" y="850" width="460" height="100" rx="16" fill="url(#f1-brandGrad)"></rect>
+      <rect x="210" y="850" width="460" height="100" rx="16" fill="url(#f1-topGlow)"></rect>
+      <rect x="210.5" y="850.5" width="459" height="99" rx="15.5" fill="none" stroke="rgba(255,255,255,0.28)"></rect>
+    </g>
+    <circle cx="244" cy="900" r="14" fill="rgba(255,255,255,0.18)"></circle>
+    <text x="244" y="904.5" font-size="13" font-weight="700" fill="#FFFFFF" text-anchor="middle">5</text>
+    <text x="274" y="894" font-size="22" font-weight="700" letter-spacing="-0.3" fill="#FFFFFF">Forecast</text>
+    <text x="274" y="918" font-size="12.5" fill="rgba(255,255,255,0.78)">weekly unit sales · 13-week horizon</text>
+    <g fill="rgba(255,255,255,0.34)">
+      <rect x="553" y="914" width="5.5" height="14" rx="1.5"></rect>
+      <rect x="560.5" y="910" width="5.5" height="18" rx="1.5"></rect>
+      <rect x="568" y="904" width="5.5" height="24" rx="1.5"></rect>
+      <rect x="575.5" y="908" width="5.5" height="20" rx="1.5"></rect>
+      <rect x="583" y="902" width="5.5" height="26" rx="1.5"></rect>
+      <rect x="590.5" y="898" width="5.5" height="30" rx="1.5"></rect>
+      <rect x="598" y="904" width="5.5" height="24" rx="1.5"></rect>
+      <rect x="605.5" y="900" width="5.5" height="28" rx="1.5"></rect>
+      <rect x="613" y="894" width="5.5" height="34" rx="1.5"></rect>
+      <rect x="620.5" y="902" width="5.5" height="26" rx="1.5"></rect>
+      <rect x="628" y="906" width="5.5" height="22" rx="1.5"></rect>
+      <rect x="635.5" y="902" width="5.5" height="26" rx="1.5"></rect>
+      <rect x="643" y="898" width="5.5" height="30" rx="1.5"></rect>
+    </g>
+  </g>
+
+  </g>
+  <g transform="translate(0, 1546.3) scale(1.000000)">
+
+  <title>How the ensemble is weighted</title>
+  <defs>
+    <filter id="f2-cardShadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0C1133" flood-opacity="0.07"></feDropShadow>
+    </filter>
+    <marker id="f2-ah" viewBox="0 0 10 10" refX="7.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0.5 1.5 L8.5 5 L0.5 8.5 Z" fill="#3A55FF"></path>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1360" height="916" rx="24" fill="#EBF0F5"></rect>
+
+  
+  <text x="40" y="54" font-size="11" font-weight="600" letter-spacing="2.2" fill="#7289A5">ENSEMBLE</text>
+  <text x="40" y="91" font-size="28" font-weight="700" letter-spacing="-0.6" fill="#070708">How the ensemble is weighted</text>
+
+  
+  <g data-screen-label="Panel A - greedy selection">
+    <g filter="url(#f2-cardShadow)">
+      <rect x="40" y="122" width="1280" height="262" rx="16" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+    <circle cx="80" cy="156" r="12" fill="#EEF1FF"></circle>
+    <text x="80" y="160.5" font-size="12" font-weight="700" fill="#3A55FF" text-anchor="middle">A</text>
+    <text x="102" y="161" font-size="16" font-weight="600" fill="#070708">Caruana greedy weight selection</text>
+    <text x="1292" y="161" font-size="12" fill="#7289A5" text-anchor="end">greedy hill-climbing on held-out WAPE — not hand-tuned, not a plain average</text>
+
+    
+    <text x="70" y="198" font-size="11" font-weight="700" fill="#3A55FF">1</text>
+    <rect x="68" y="206" width="210" height="88" rx="12" fill="#EBF0F5"></rect>
+    <text x="84" y="235" font-size="13" font-weight="600" fill="#070708">Pool of candidate</text>
+    <text x="84" y="251" font-size="13" font-weight="600" fill="#070708">forecasts</text>
+    <text x="84" y="269" font-size="10.5" fill="#7289A5">many per-model,</text>
+    <text x="84" y="282" font-size="10.5" fill="#7289A5">per-quantile candidates</text>
+    <path d="M282 250 L296 250" fill="none" stroke="#3A55FF" stroke-width="1.6" marker-end="url(#f2-ah)"></path>
+
+    
+    <text x="302" y="198" font-size="11" font-weight="700" fill="#3A55FF">2</text>
+    <rect x="300" y="206" width="185" height="88" rx="12" fill="#EBF0F5"></rect>
+    <text x="316" y="244" font-size="13" font-weight="600" fill="#070708">Start from</text>
+    <text x="316" y="260" font-size="13" font-weight="600" fill="#070708">empty ensemble</text>
+    <path d="M489 250 L503 250" fill="none" stroke="#3A55FF" stroke-width="1.6" marker-end="url(#f2-ah)"></path>
+
+    
+    <text x="509" y="198" font-size="11" font-weight="700" fill="#3A55FF">3</text>
+    <rect x="507" y="206" width="270" height="88" rx="12" fill="#EBF0F5"></rect>
+    <text x="523" y="244" font-size="13" font-weight="600" fill="#070708">Add the candidate that most</text>
+    <text x="523" y="260" font-size="13" font-weight="600" fill="#070708">reduces backtest WAPE</text>
+    <path d="M669 202 C 697 170, 541 170, 569 202" fill="none" stroke="#3A55FF" stroke-width="1.6" marker-end="url(#f2-ah)"></path>
+    <text x="619" y="172" font-size="10.5" fill="#7289A5" text-anchor="middle">repeat with replacement</text>
+    <path d="M781 250 L795 250" fill="none" stroke="#3A55FF" stroke-width="1.6" marker-end="url(#f2-ah)"></path>
+
+    
+    <text x="801" y="198" font-size="11" font-weight="700" fill="#3A55FF">4</text>
+    <rect x="799" y="206" width="245" height="88" rx="12" fill="#EBF0F5"></rect>
+    <text x="815" y="244" font-size="13" font-weight="600" fill="#070708">Weights = how often each</text>
+    <text x="815" y="260" font-size="13" font-weight="600" fill="#070708">member was picked</text>
+    <path d="M1048 250 L1062 250" fill="none" stroke="#3A55FF" stroke-width="1.6" marker-end="url(#f2-ah)"></path>
+
+    
+    <rect x="1066" y="206" width="200" height="88" rx="12" fill="#EEF1FF" stroke="#B8C5FF"></rect>
+    <text x="1082" y="240" font-size="13.5" font-weight="600" fill="#070708">Fold-validated</text>
+    <text x="1082" y="258" font-size="10.5" fill="#7289A5">leave-one-fold-out</text>
+    <text x="1082" y="271" font-size="10.5" fill="#7289A5">generalizes</text>
+
+    
+    <path d="M68 318 L1292 318" stroke="#EBF0F5" stroke-width="1"></path>
+    <text x="68" y="350" font-size="10.5" font-weight="600" letter-spacing="1.5" fill="#9BADC4">WHY NOT REGRESSION-FIT WEIGHTS?</text>
+    <circle cx="326" cy="346" r="3" fill="#3A55FF"></circle>
+    <text x="336" y="350" font-size="12" fill="#3D3F47">optimizes held-out WAPE directly, not squared error</text>
+    <circle cx="660" cy="346" r="3" fill="#3A55FF"></circle>
+    <text x="670" y="350" font-size="12" fill="#3D3F47">weights stay non-negative and sparse on collinear candidates</text>
+    <circle cx="1032" cy="346" r="3" fill="#3A55FF"></circle>
+    <text x="1042" y="350" font-size="12" fill="#3D3F47">selection with replacement resists overfitting</text>
+  </g>
+
+  
+  <g data-screen-label="Panel B - resulting blend">
+    <g filter="url(#f2-cardShadow)">
+      <rect x="40" y="414" width="1280" height="450" rx="16" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+    <circle cx="80" cy="454" r="12" fill="#EEF1FF"></circle>
+    <text x="80" y="458.5" font-size="12" font-weight="700" fill="#3A55FF" text-anchor="middle">B</text>
+    <text x="102" y="459" font-size="16" font-weight="600" fill="#070708">Resulting blend <tspan fill="#7289A5" font-weight="500">· 9 members</tspan></text>
+
+    
+    <circle cx="958" cy="454" r="4" fill="#FF9900"></circle>
+    <text x="968" y="458.5" font-size="11.5" fill="#3D3F47">Chronos-2</text>
+    <circle cx="1052" cy="454" r="4" fill="#4285F4"></circle>
+    <text x="1062" y="458.5" font-size="11.5" fill="#3D3F47">TimesFM-2.5</text>
+    <circle cx="1162" cy="454" r="4" fill="#7FBA00"></circle>
+    <text x="1172" y="458.5" font-size="11.5" fill="#3D3F47">GBM</text>
+    <circle cx="1224" cy="454" r="4" fill="#D97757"></circle>
+    <text x="1234" y="458.5" font-size="11.5" fill="#3D3F47">SeqGRU</text>
+
+    
+    <g stroke="#EBF0F5" stroke-width="1">
+      <path d="M616 486 L616 802"></path>
+      <path d="M816 486 L816 802"></path>
+      <path d="M1016 486 L1016 802"></path>
+      <path d="M1216 486 L1216 802"></path>
+    </g>
+    <path d="M416 486 L416 802" stroke="#D8E1EC" stroke-width="1"></path>
+    <text x="416" y="820" font-size="10" fill="#9BADC4" text-anchor="middle">0</text>
+    <text x="616" y="820" font-size="10" fill="#9BADC4" text-anchor="middle">0.1</text>
+    <text x="816" y="820" font-size="10" fill="#9BADC4" text-anchor="middle">0.2</text>
+    <text x="1016" y="820" font-size="10" fill="#9BADC4" text-anchor="middle">0.3</text>
+    <text x="1216" y="820" font-size="10" fill="#9BADC4" text-anchor="middle">0.4</text>
+
+    
+    <text x="1156" y="478" font-size="11" fill="#7289A5" text-anchor="end">dominant member</text>
+
+    <text x="396" y="506" font-size="12.5" text-anchor="end" fill="#070708">Chronos-2 <tspan fill="#7289A5">fine-tuned, daily, q0.50</tspan></text>
+    <rect x="416" y="494" width="740" height="16" rx="8" fill="#FF9900"></rect>
+    <text x="1166" y="506" font-size="12" fill="#3D3F47" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">0.370</text>
+
+    <text x="396" y="542" font-size="12.5" text-anchor="end" fill="#070708">GBM <tspan fill="#7289A5">LightGBM, tweedie</tspan></text>
+    <rect x="416" y="530" width="334" height="16" rx="8" fill="#7FBA00"></rect>
+    <text x="760" y="542" font-size="12" fill="#3D3F47" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">0.167</text>
+
+    <text x="396" y="578" font-size="12.5" text-anchor="end" fill="#070708">SeqGRU <tspan fill="#7289A5">in-house recurrent net</tspan></text>
+    <rect x="416" y="566" width="240" height="16" rx="8" fill="#D97757"></rect>
+    <text x="666" y="578" font-size="12" fill="#3D3F47" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">0.120</text>
+
+    <text x="396" y="614" font-size="12.5" text-anchor="end" fill="#070708">Chronos-2 <tspan fill="#7289A5">fine-tuned, daily, q0.55</tspan></text>
+    <rect x="416" y="602" width="222" height="16" rx="8" fill="#FF9900"></rect>
+    <text x="648" y="614" font-size="12" fill="#3D3F47" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">0.111</text>
+
+    <text x="396" y="650" font-size="12.5" text-anchor="end" fill="#070708">Chronos-2 <tspan fill="#7289A5">fine-tuned, weekly, q0.60</tspan></text>
+    <rect x="416" y="638" width="148" height="16" rx="8" fill="#FF9900"></rect>
+    <text x="574" y="650" font-size="12" fill="#3D3F47" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">0.074</text>
+
+    <text x="396" y="686" font-size="12.5" text-anchor="end" fill="#070708">TimesFM-2.5 <tspan fill="#7289A5">zero-shot, weekly, q0.70</tspan></text>
+    <rect x="416" y="674" width="112" height="16" rx="8" fill="#4285F4"></rect>
+    <text x="538" y="686" font-size="12" fill="#3D3F47" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">0.056</text>
+
+    <text x="396" y="722" font-size="12.5" text-anchor="end" fill="#070708">TimesFM-2.5 <tspan fill="#7289A5">fine-tuned, weekly, q0.60</tspan></text>
+    <rect x="416" y="710" width="92" height="16" rx="8" fill="#4285F4"></rect>
+    <text x="518" y="722" font-size="12" fill="#3D3F47" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">0.046</text>
+
+    <text x="396" y="758" font-size="12.5" text-anchor="end" fill="#070708">TimesFM-2.5 <tspan fill="#7289A5">zero-shot, daily, q0.60</tspan></text>
+    <rect x="416" y="746" width="74" height="16" rx="8" fill="#4285F4"></rect>
+    <text x="500" y="758" font-size="12" fill="#3D3F47" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">0.037</text>
+
+    <text x="396" y="794" font-size="12.5" text-anchor="end" fill="#070708">Chronos-2 <tspan fill="#7289A5">fine-tuned, weekly, q0.55</tspan></text>
+    <rect x="416" y="782" width="38" height="16" rx="8" fill="#FF9900"></rect>
+    <text x="464" y="794" font-size="12" fill="#3D3F47" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">0.019</text>
+
+    
+    <path d="M68 830 L1292 830" stroke="#D8E1EC" stroke-width="1"></path>
+    <text x="68" y="851" font-size="12" fill="#7289A5">Weights normalized at blend time · a missing member drops out</text>
+  </g>
+
+  
+  <text x="40" y="894" font-size="11.5" fill="#7289A5">Algorithm: Caruana et al. (2004), “Ensemble selection from libraries of models” · found via Amazon AutoGluon’s weighted-ensemble source</text>
+
+  </g>
+  <g transform="translate(0, 2486.3) scale(1.096774)">
+
+  <title>WAPE waterfall — every component earns its place</title>
+  <defs>
+    <linearGradient id="f3-brandGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#770BFF"></stop>
+      <stop offset="100%" stop-color="#3A55FF"></stop>
+    </linearGradient>
+    <filter id="f3-cardShadow" x="-20%" y="-30%" width="140%" height="170%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#0C1133" flood-opacity="0.07"></feDropShadow>
+    </filter>
+    <filter id="f3-glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feDropShadow dx="0" dy="4" stdDeviation="7" flood-color="#3A55FF" flood-opacity="0.35"></feDropShadow>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="1240" height="710" rx="24" fill="#EBF0F5"></rect>
+
+  
+  <text x="40" y="54" font-size="11" font-weight="600" letter-spacing="2.2" fill="#7289A5">RESULTS</text>
+  <text x="40" y="91" font-size="28" font-weight="700" letter-spacing="-0.6" fill="#070708">Every component earns its place.</text>
+
+  <g data-screen-label="WAPE waterfall">
+    <g filter="url(#f3-cardShadow)">
+      <rect x="40" y="122" width="1160" height="530" rx="16" fill="#FFFFFF" stroke="#D8E1EC"></rect>
+    </g>
+
+    
+    <g stroke="#EBF0F5" stroke-width="1">
+      <path d="M120 245 L1150 245"></path>
+      <path d="M120 335 L1150 335"></path>
+      <path d="M120 425 L1150 425"></path>
+      <path d="M120 515 L1150 515"></path>
+    </g>
+    <path d="M120 560 L1150 560" stroke="#D8E1EC" stroke-width="1"></path>
+    <g font-size="11" fill="#9BADC4" text-anchor="end" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">
+      <text x="112" y="249">27</text>
+      <text x="112" y="339">26</text>
+      <text x="112" y="429">25</text>
+      <text x="112" y="519">24</text>
+    </g>
+    <text x="84" y="400" font-size="11" fill="#7289A5" transform="rotate(-90 84 400)" text-anchor="middle">WAPE % — lower is better</text>
+
+    
+    <rect x="822" y="146" width="350" height="28" rx="14" fill="url(#f3-brandGrad)"></rect>
+    <text x="997" y="164.5" font-size="12.5" font-weight="600" fill="#FFFFFF" text-anchor="middle">final 23.95 · −2.15 WAPE (−8.2%) vs benchmark</text>
+
+    
+    <path d="M120 326 L1150 326" stroke="#7289A5" stroke-width="1.3" stroke-dasharray="5 4"></path>
+    <text x="1148" y="318" font-size="11" fill="#7289A5" text-anchor="end">benchmark · 26.10</text>
+
+    
+    <g stroke="#9BADC4" stroke-width="1.2">
+      <path d="M212 326 L255 326"></path>
+      <path d="M327 219 L370 219"></path>
+      <path d="M442 258 L485 258"></path>
+      <path d="M557 348.5 L600 348.5"></path>
+      <path d="M672 420.5 L715 420.5"></path>
+      <path d="M787 480 L830 480"></path>
+      <path d="M902 496 L945 496"></path>
+      <path d="M1017 506 L1060 506"></path>
+    </g>
+
+    
+    <rect x="140" y="326" width="72" height="234" rx="3" fill="#C4D3E3"></rect>
+    <rect x="255" y="219" width="72" height="341" rx="3" fill="#EB623A"></rect>
+    <rect x="370" y="219" width="72" height="39" rx="3" fill="#3A55FF"></rect>
+    <rect x="485" y="258" width="72" height="90.5" rx="3" fill="#3A55FF"></rect>
+    <rect x="600" y="348.5" width="72" height="72" rx="3" fill="#3A55FF"></rect>
+    <rect x="715" y="420.5" width="72" height="59.5" rx="3" fill="#3A55FF"></rect>
+    <rect x="830" y="480" width="72" height="16" rx="3" fill="#3A55FF"></rect>
+    <rect x="945" y="496" width="72" height="10" rx="2" fill="#770BFF"></rect>
+    <rect x="1060" y="506" width="72" height="13.5" rx="2" fill="url(#f3-brandGrad)" filter="url(#f3-glow)"></rect>
+
+    
+    <circle cx="521" cy="326" r="3.5" fill="#3A55FF" stroke="#FFFFFF" stroke-width="1.5"></circle>
+    <text x="568" y="316" font-size="11" font-weight="500" fill="#3A55FF">beats the benchmark from here</text>
+
+    
+    <rect x="186" y="148" width="210" height="24" rx="12" fill="#EBF0F5"></rect>
+    <circle cx="202" cy="160" r="3" fill="#EB623A"></circle>
+    <text x="212" y="164" font-size="10.5" fill="#3D3F47">one model alone loses · +1.19</text>
+    <path d="M291 176 L291 198" stroke="#9BADC4" stroke-width="1.2"></path>
+
+    
+    <g font-size="12" fill="#3D3F47" text-anchor="middle" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">
+      <text x="176" y="314">26.10</text>
+      <text x="291" y="211">27.29</text>
+      <text x="406" y="274">26.86</text>
+      <text x="521" y="364.5">25.85</text>
+      <text x="636" y="436.5">25.05</text>
+      <text x="751" y="496">24.39</text>
+      <text x="866" y="512">24.21</text>
+      <text x="981" y="522">24.10</text>
+    </g>
+    <text x="1096" y="537" font-size="13" font-weight="700" fill="#070708" text-anchor="middle" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">23.95</text>
+    <g font-size="10" fill="#7289A5" text-anchor="middle" font-family="&#39;Geist Mono&#39;,ui-monospace,monospace">
+      <text x="406" y="288">−0.43</text>
+      <text x="521" y="378">−1.01</text>
+      <text x="636" y="450">−0.80</text>
+      <text x="751" y="510">−0.66</text>
+      <text x="866" y="526">−0.18</text>
+      <text x="981" y="536">−0.11</text>
+      <text x="1096" y="551">−0.15</text>
+    </g>
+
+    
+    <g font-size="10" font-weight="700" fill="#3A55FF" text-anchor="middle">
+      <text x="176" y="580">1</text><text x="291" y="580">2</text><text x="406" y="580">3</text>
+      <text x="521" y="580">4</text><text x="636" y="580">5</text><text x="751" y="580">6</text>
+      <text x="866" y="580">7</text><text x="981" y="580">8</text><text x="1096" y="580">9</text>
+    </g>
+    <g font-size="10.5" fill="#3D3F47" text-anchor="middle">
+      <text x="176" y="600">Benchmark</text>
+      <text x="291" y="594">Best single model</text><text x="291" y="607">(Chronos-2 zero-shot)</text>
+      <text x="406" y="594">Ensemble blend</text><text x="406" y="607">(models + quantiles)</text>
+      <text x="521" y="600">Seasonal &amp; promo</text>
+      <text x="636" y="594">Fine-tuning (LoRA,</text><text x="636" y="607">uncensored context)</text>
+      <text x="751" y="594">Reconcile to</text><text x="751" y="607">partner totals</text>
+      <text x="866" y="600">Event uplift</text>
+      <text x="981" y="594">SeqGRU member</text><text x="981" y="607">(in-house GRU)</text>
+      <text x="1096" y="594">Residual-stack</text><text x="1096" y="607">LightGBM correction</text>
+    </g>
+  </g>
+
+  
+  <text x="40" y="686" font-size="11.5" fill="#7289A5">WAPE on 2025-10-26 (leak-free); the held-out backtest-fold mean tells the same story. Lower is better.</text>
+
+  </g>
+</svg>
